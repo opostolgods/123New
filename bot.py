@@ -135,7 +135,7 @@ def sub_plan_callback(call):
         "<b>После оплаты нажмите кнопку проверить.</b>"
     )
     markup = types.InlineKeyboardMarkup()
-    btn_invoice = types.InlineKeyboardButton("Счёт", url=invoice.pay_url)
+    btn_invoice = types.InlineKeyboardButton("Счёт", url=invoice.url)
     btn_check = types.InlineKeyboardButton("Проверить", callback_data="check_payment")
     markup.add(btn_invoice, btn_check)
     safe_edit_message(bot, call, text, reply_markup=markup)
