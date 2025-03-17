@@ -26,8 +26,8 @@ def start_handler(message):
     if not subscribed:
         text = "📡 <b>Для использования данного бота нужно подписаться на канал.</b>"
         markup = types.InlineKeyboardMarkup()
-        btn_channel = types.InlineKeyboardButton("🌖 Канал", url=CHANNEL_LINK)
-        btn_check = types.InlineKeyboardButton("🌑 Проверить", callback_data="check_subscription")
+        btn_channel = types.InlineKeyboardButton("🌐 Канал", url=CHANNEL_LINK)
+        btn_check = types.InlineKeyboardButton("🔑 Проверить", callback_data="check_subscription")
         markup.add(btn_channel, btn_check)
         bot.send_message(message.chat.id, text, parse_mode="HTML", reply_markup=markup)
     else:
@@ -77,7 +77,7 @@ def profile_callback(call):
         "<b>Информация пользователя</b>\n"
         f"<blockquote>💎 Подписка - <code>{sub_status}</code>\n"
         f"👤 Партнёр - <code>{profile.get('partner', 'нет')}</code>\n"
-        f"🆔 Айди - <code>{user_id}</code></blockquote>"
+        f"🔔 Айди - <code>{user_id}</code></blockquote>"
     )
     markup = types.InlineKeyboardMarkup()
     btn_sub = types.InlineKeyboardButton("Подписка", callback_data="subscription")
@@ -206,11 +206,11 @@ def process_ip_search(message):
     if not ip:
         bot.send_message(message.chat.id, "Пустой запрос. Попробуйте снова.")
         return
-    
+
     try:
         ip_info = get_ip_info(ip)
         if ip_info and ip_info.get("status") == "success":
-            result = f"""\`\`\`
+            result = f"""```
 IP: {ip_info.get('query', 'Н/Д')}
 Страна: {ip_info.get('country', 'Н/Д')} ({ip_info.get('countryCode', 'Н/Д')})
 Регион: {ip_info.get('regionName', 'Н/Д')} ({ip_info.get('region', 'Н/Д')})
@@ -221,7 +221,7 @@ IP: {ip_info.get('query', 'Н/Д')}
 Провайдер: {ip_info.get('isp', 'Н/Д')}
 Организация: {ip_info.get('org', 'Н/Д')}
 AS: {ip_info.get('as', 'Н/Д')}
-\`\`\`"""
+```"""
             bot.send_message(message.chat.id, result, parse_mode="Markdown")
         else:
             bot.send_message(message.chat.id, f"Ошибка при поиске информации по IP: {ip_info.get('message', 'Неизвестная ошибка')}")
@@ -272,7 +272,7 @@ def process_channel_search(message):
     if not query:
         bot.send_message(message.chat.id, "Пустой запрос. Попробуйте снова.")
         return
-    
+
     bot.send_message(message.chat.id, "⏳ Ищем каналы...")
     results, search_url = get_tg_channels(query)
     if results:
@@ -286,7 +286,7 @@ def process_channel_search(message):
     else:
         bot.send_message(
             message.chat.id,
-            "<b>❌ Ошибка:</b> <i>Каналы не найдены</i>",
+            "❌ Ошибка: <i>Каналы не найдены</i>",
             parse_mode='HTML'
         )
 
@@ -327,15 +327,15 @@ def handle_download(call):
     _, start_index, end_index = call.data.split("_")
     start_index, end_index = int(start_index), int(end_index)
     results = search_results[call.message.chat.id]["results"]
-    
+
     txt_content = ""
     for i in range(start_index, end_index):
         channel = results[i]
         txt_content += f"{i + 1}. {channel['name']} - {channel['url']}\n"
-    
+
     file_obj = io.BytesIO(txt_content.encode('utf-8'))
     file_obj.name = "channels.txt"
-    
+
     bot.send_document(
         call.message.chat.id,
         document=file_obj,
@@ -347,7 +347,7 @@ def handle_download(call):
 def handle_new_search(call):
     if call.message.chat.id in search_results:
         del search_results[call.message.chat.id]
-    
+
     text = "<b>Выберите направление поиска 🔎</b>"
     markup = types.InlineKeyboardMarkup(row_width=2)
     btn_ip = types.InlineKeyboardButton("Айпи", callback_data="search_ip")
@@ -358,4 +358,3 @@ def handle_new_search(call):
     safe_edit_message(bot, call, text, reply_markup=markup)
 
 bot.polling(non_stop=True)
-
